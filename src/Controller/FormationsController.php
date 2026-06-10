@@ -39,7 +39,7 @@ class FormationsController extends AbstractController
     {
         $formations = $this->formationRepository->findAll();
         $categories = $this->categorieRepository->findAll();
-        return $this->render(self::FORMATIONS_VIEW, [
+        return $this->render('pages/formations.html.twig', [
             'formations' => $formations,
             'categories' => $categories
         ]);
@@ -50,7 +50,7 @@ class FormationsController extends AbstractController
     {
         $formations = $this->formationRepository->findAllOrderBy($champ, $ordre, $table);
         $categories = $this->categorieRepository->findAll();
-        return $this->render(self::FORMATIONS_VIEW, [
+        return $this->render('pages/formations.html.twig', [
             'formations' => $formations,
             'categories' => $categories
         ]);

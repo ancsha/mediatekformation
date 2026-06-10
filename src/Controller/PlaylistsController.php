@@ -50,13 +50,18 @@ class PlaylistsController extends AbstractController
      * @return Response
      */
     #[Route('/playlists', name: 'playlists')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $playlists = $this->playlistRepository->findAllOrderByName('ASC');
+        $order = strtoupper($request->query->get('order', 'ASC'));
+        if (!in_array($order, ['ASC', 'DESC'])) {
+            $order = 'ASC';
+        }
+        $playlists = $this->playlistRepository->getAllPlaylistsOrderByNbFormations($order);
         $categories = $this->categorieRepository->findAll();
-        return $this->render(self::FORMATIONS_VIEW, [
-            'playlists' => $playlists,
-            'categories' => $categories
+        return $this->render('pages/playlists.html.twig', [   // ← le bon chemin
+            'playlists'  => $playlists,
+            'categories' => $categories,
+            'order'      => $order,
         ]);
     }
 
@@ -95,10 +100,12 @@ class PlaylistsController extends AbstractController
         $playlist = $this->playlistRepository->find($id);
         $playlistCategories = $this->categorieRepository->findAllForOnePlaylist($id);
         $playlistFormations = $this->formationRepository->findAllForOnePlaylist($id);
+        $nbFormations = count($playlistFormations);
         return $this->render("pages/playlist.html.twig", [
             'playlist' => $playlist,
             'playlistcategories' => $playlistCategories,
-            'playlistformations' => $playlistFormations
+            'playlistformations' => $playlistFormations,
+            'nbFormations'       => $nbFormations
         ]);
     }
     

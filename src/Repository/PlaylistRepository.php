@@ -78,5 +78,29 @@ class PlaylistRepository extends ServiceEntityRepository
                     ->getResult();
         }
     }
+    // Récupère toutes les playlists avec le nb de formations, triées ASC ou DESC
+    public function getAllPlaylistsOrderByNbFormations(string $order): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p, COUNT(f.id) AS HIDDEN nbFormations')
+            ->leftJoin('p.formations', 'f')
+            ->groupBy('p.id')
+            ->orderBy('nbFormations', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
+    // Récupère une playlist + son nb de formations pour la page détail
+    public function findPlaylistWithNbFormations(int $id): ?array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p, COUNT(f.id) AS nbFormations')
+            ->leftJoin('p.formations', 'f')
+            ->where('p.id = :id')
+            ->setParameter('id', $id)
+            ->groupBy('p.id')
+            ->getQuery()
+            ->getOneOrNullResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+    }
     
 }
